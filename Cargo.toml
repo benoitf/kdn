@@ -19,7 +19,7 @@ ureq = { version = "3", default-features = false, features = ["json"] }
 tungstenite = "0.30"
 rustix = { version = "1", default-features = false, features = ["std", "termios"] }
 dirs = "6"
-comfy-table = { version = "7", default-features = false }
+comfy-table = { version = "8", default-features = false }
 
 [lints.rust]
 unsafe_code = "forbid"
