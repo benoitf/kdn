@@ -1,0 +1,40 @@
+[package]
+name = "kdn"
+version = "0.1.0"
+edition = "2024"
+description = "CLI to manage Kaiden AI agent workspaces"
+license = "Apache-2.0"
+repository = "https://github.com/openkaiden/kdn"
+readme = "README.md"
+
+[[bin]]
+name = "kdn"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "3", default-features = false, features = ["json"] }
+tungstenite = "0.26"
+rustix = { version = "1", default-features = false, features = ["std", "termios"] }
+dirs = "6"
+comfy-table = { version = "7", default-features = false }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+
+# Small binary: Kaiden is plain HTTP on 127.0.0.1, so no TLS is linked either.
+[profile.release]
+strip = true
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+opt-level = "z"

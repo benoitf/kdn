@@ -1,0 +1,23 @@
+# cargo-deny configuration: run `cargo deny check` (CI does on every PR).
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "deny"
+
+[licenses]
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "MPL-2.0",
+    "Unicode-3.0",
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
