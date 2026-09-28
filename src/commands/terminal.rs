@@ -30,25 +30,16 @@ pub fn run(
     token: &str,
     sandbox_name: &str,
     command: &[String],
-    gateway: Option<&str>,
 ) -> Result<i32, Box<dyn std::error::Error>> {
-    run_terminal(base_url, token, sandbox_name, command, gateway, false)
+    run_terminal(base_url, token, sandbox_name, command, false)
 }
 
-/// WebSocket URL of the workspace PTY endpoint, with the optional gateway and agent query parameters.
-fn pty_url(base_url: &str, sandbox_name: &str, gateway: Option<&str>, agent: bool) -> String {
+/// WebSocket URL of the workspace PTY endpoint, with the optional agent query parameter.
+fn pty_url(base_url: &str, sandbox_name: &str, agent: bool) -> String {
     let ws_url = base_url.replacen("http://", "ws://", 1);
     let mut url = format!("{ws_url}/api/workspaces/{}/pty", encode(sandbox_name));
-    let mut params = Vec::new();
-    if let Some(gw) = gateway {
-        params.push(format!("gateway={}", encode(gw)));
-    }
     if agent {
-        params.push("agent=true".to_string());
-    }
-    if !params.is_empty() {
-        url.push('?');
-        url.push_str(&params.join("&"));
+        url.push_str("?agent=true");
     }
     url
 }
@@ -58,10 +49,9 @@ pub fn run_terminal(
     token: &str,
     sandbox_name: &str,
     command: &[String],
-    gateway: Option<&str>,
     agent: bool,
 ) -> Result<i32, Box<dyn std::error::Error>> {
-    let mut request = pty_url(base_url, sandbox_name, gateway, agent).into_client_request()?;
+    let mut request = pty_url(base_url, sandbox_name, agent).into_client_request()?;
     request
         .headers_mut()
         .insert("Authorization", format!("Bearer {token}").parse()?);
@@ -205,32 +195,24 @@ mod tests {
     #[test]
     fn pty_url_without_params() {
         assert_eq!(
-            pty_url("http://127.0.0.1:4242", "ws-1", None, false),
+            pty_url("http://127.0.0.1:4242", "ws-1", false),
             "ws://127.0.0.1:4242/api/workspaces/ws-1/pty"
-        );
-    }
-
-    #[test]
-    fn pty_url_with_gateway() {
-        assert_eq!(
-            pty_url("http://127.0.0.1:4242", "ws-1", Some("gw a"), false),
-            "ws://127.0.0.1:4242/api/workspaces/ws-1/pty?gateway=gw%20a"
         );
     }
 
     #[test]
     fn pty_url_with_agent() {
         assert_eq!(
-            pty_url("http://127.0.0.1:4242", "ws-1", None, true),
+            pty_url("http://127.0.0.1:4242", "ws-1", true),
             "ws://127.0.0.1:4242/api/workspaces/ws-1/pty?agent=true"
         );
     }
 
     #[test]
-    fn pty_url_with_gateway_and_agent_encodes_name() {
+    fn pty_url_encodes_name() {
         assert_eq!(
-            pty_url("http://127.0.0.1:4242", "a/b", Some("gw"), true),
-            "ws://127.0.0.1:4242/api/workspaces/a%2Fb/pty?gateway=gw&agent=true"
+            pty_url("http://127.0.0.1:4242", "a/b", true),
+            "ws://127.0.0.1:4242/api/workspaces/a%2Fb/pty?agent=true"
         );
     }
 }

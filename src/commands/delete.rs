@@ -18,16 +18,8 @@
 
 use crate::config::encode;
 
-pub fn run(
-    base_url: &str,
-    token: &str,
-    name: &str,
-    gateway: Option<&str>,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let mut url = format!("{base_url}/api/workspaces/{}", encode(name));
-    if let Some(gw) = gateway {
-        url = format!("{url}?gateway={}", encode(gw));
-    }
+pub fn run(base_url: &str, token: &str, name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let url = format!("{base_url}/api/workspaces/{}", encode(name));
 
     ureq::delete(&url)
         .header("Authorization", &format!("Bearer {token}"))
