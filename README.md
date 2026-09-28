@@ -30,8 +30,6 @@ kdn ws terminal <name> [command...]      # alias: connect; default command is /b
 kdn ws agent <name>                      # attach to the agent session shared with the Kaiden UI
 ```
 
-`--gateway <NAME>` can be passed to any `workspace` subcommand to target a gateway other than the active one.
-
 `terminal` and `agent` exit with the exit code of the remote command.
 
 ## How it finds Kaiden

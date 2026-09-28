@@ -38,10 +38,6 @@ enum Commands {
     Workspace {
         #[command(subcommand)]
         command: WorkspaceCommands,
-
-        /// Gateway name (optional, defaults to the active gateway)
-        #[arg(long, global = true)]
-        gateway: Option<String>,
     },
 }
 
@@ -80,7 +76,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Workspace { command, gateway } => {
+        Commands::Workspace { command } => {
             let (base_url, token) = config::api_endpoint()?;
             match command {
                 WorkspaceCommands::List { output } => {
@@ -88,20 +84,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     commands::list::run(&base_url, &token, json)?;
                 }
                 WorkspaceCommands::Delete { name } => {
-                    commands::delete::run(&base_url, &token, &name, gateway.as_deref())?;
+                    commands::delete::run(&base_url, &token, &name)?;
                 }
                 WorkspaceCommands::Terminal { name, command } => {
-                    let code = commands::terminal::run(
-                        &base_url,
-                        &token,
-                        &name,
-                        &command,
-                        gateway.as_deref(),
-                    )?;
+                    let code = commands::terminal::run(&base_url, &token, &name, &command)?;
                     std::process::exit(code);
                 }
                 WorkspaceCommands::Agent { name } => {
-                    let code = commands::agent::run(&base_url, &token, &name, gateway.as_deref())?;
+                    let code = commands::agent::run(&base_url, &token, &name)?;
                     std::process::exit(code);
                 }
             }

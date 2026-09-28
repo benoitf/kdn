@@ -22,7 +22,6 @@ pub fn run(
     base_url: &str,
     token: &str,
     sandbox_name: &str,
-    gateway: Option<&str>,
 ) -> Result<i32, Box<dyn std::error::Error>> {
-    terminal::run_terminal(base_url, token, sandbox_name, &[], gateway, true)
+    terminal::run_terminal(base_url, token, sandbox_name, &[], true)
 }
